@@ -1,86 +1,85 @@
 <!doctype html>
 <html>
-  <head>
-    <title>OpenLayers Overlays</title>
-    <link rel="stylesheet" href="../assets/ol3/css/ol.css" type="text/css" />
-    <link rel="stylesheet" href="../assets/css/samples.css" type="text/css" />
-    <link rel="stylesheet" href="./chapter2.css">
-  </head>
-  <body>
-    <header>
-      <div class="divs" id="div1">
-       <a href="./2360OS_02_02.html">indGEOS</a>
-      </div>
-  
-      <div class="divs" id="div2">
-        <a href="./2360OS_02_02.html">Home</a>
-        <a href="#">About</a>
-        <a href="#">contact</a>
-        <a href="./LOGIN_FORM.html">Log-In</a>
-      </div>
-    </header>
-    <div id="map" class="map"></div>
-    <div id="overlay" style="background-color: rgb(230, 230, 230); border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
+
+<head>
+  <title>OpenLayers Overlays</title>
+  <link rel="stylesheet" href="../assets/ol3/css/ol.css" type="text/css" />
+  <link rel="stylesheet" href="../assets/css/samples.css" type="text/css" />
+  <link rel="stylesheet" href="./chapter2.css">
+</head>
+
+<body>
+  <header>
+    <div class="divs" id="div1">
+      <a href="./2360OS_02_02.html">indGEOS</a>
+    </div>
+
+    <div class="divs" id="div2">
+      <a href="./2360OS_02_02.html">Home</a>
+      <a href="#">About</a>
+      <a href="#">contact</a>
+      <a href="./LOGIN_FORM.html">Log-In</a>
+    </div>
+  </header>
+  <div id="map" class="map"></div>
+  <div id="overlay"
+    style="background-color: rgb(230, 230, 230); border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
     <script src="../assets/ol3/js/ol.js"></script>
 
     <!-- script for toogle screen -->
     <script src="../assets/ol3/js/ol-debug.js"></script>
     <script>
+      var layer = new ol.layer.Tile({
+        source: new ol.source.OSM()
+      });
 
-        var layer = new ol.layer.Tile({
-          source: new ol.source.OSM()
-        });
+      // create an interaction to add to the map that isn't there by default
+      var interaction = new ol.interaction.DragRotateAndZoom();
 
-        // create an interaction to add to the map that isn't there by default
-        var interaction = new ol.interaction.DragRotateAndZoom();
+      // create a control to add to the map that isn't there by default
+      var control = new ol.control.FullScreen();
+      
+            var center = ol.proj.transform([-1.812, 52.443], 'EPSG:4326', 'EPSG:3857');
 
-        // create a control to add to the map that isn't there by default
-        var control = new ol.control.FullScreen();
+            var overlay = new ol.Overlay({
+              element: document.getElementById('overlay'),
+              positioning: 'bottom-center'
+            });
 
-        var center = ol.proj.transform([-1.812, 52.443], 'EPSG:4326', 'EPSG:3857');
+            var view = new ol.View({
+              center: center,
+              zoom: 6
+            });
 
-        var overlay = new ol.Overlay({
-          element: document.getElementById('overlay'),
-          positioning: 'bottom-center'
-        });
+            var map = new ol.Map({
+              target: 'map',
+              layers: [layer],
+              // interactions: [interaction],
+              view: view,
+              overlays: [overlay],
+              controls: [control],  
+              // controls creating problem
+            });
 
-        var view = new ol.View({
-          center: center,
-          zoom: 6
-        });
+            
 
-        // var map = new ol.Map({
-        //   target: 'map',
-        //   layers: [layer],
-        //   view: view
-        // });
-
-        // var map for both
-        var map = new ol.Map({
-          target: 'map',
-          layers: [layer],
-          interactions: [interaction],
-          controls: [control],
-          overlays: [overlay],
-          view: view
-        });
-        
-        // register an event handler for the click event
-        map.on('click', function(event) {
-          // extract the spatial coordinate of the click event in map projection units
-          var coord = event.coordinate;
-          // transform it to decimal degrees
-          var degrees = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
-          // format a human readable version
-          var hdms = ol.coordinate.toStringHDMS(degrees);
-          // update the overlay element's content
-          var element = overlay.getElement();
-          element.innerHTML = hdms;
-          // position the element (using the coordinate in the map's projection)
-          overlay.setPosition(coord);
-          // and add it to the map
-          map.addOverlay(overlay);
-        });
+            // register an event handler for the click event
+            map.on('click', function (event) {
+              // extract the spatial coordinate of the click event in map projection units
+              var coord = event.coordinate;
+              // transform it to decimal degrees
+              var degrees = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
+              // format a human readable version
+              var hdms = ol.coordinate.toStringHDMS(degrees);
+              // update the overlay element's content
+              var element = overlay.getElement();
+              element.innerHTML = hdms;
+              // position the element (using the coordinate in the map's projection)
+              overlay.setPosition(coord);
+              // and add it to the map
+              map.addOverlay(overlay);
+            });
     </script>
-  </body>
+</body>
+
 </html>
